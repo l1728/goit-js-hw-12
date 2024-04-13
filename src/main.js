@@ -1,5 +1,4 @@
 
-
 import iziToast from "izitoast";
 import "izitoast/dist/css/iziToast.min.css";
 import SimpleLightbox from "simplelightbox";
@@ -11,18 +10,21 @@ import { renderImages } from "./js/render-functions"
    // Підключаємо бібліотеку і вказуємо затримку підпису зображення з атрибуту alt
     const lightbox = new SimpleLightbox('.gallery a', { captionDelay: 250,
     captionsData: 'alt', 
-    });
-   
- 
+   });
+
    // Отримуємо посилання на форму за ідентифікатором
    const searchForm = document.getElementById("search-form");
-   // Отримуємо посилання на індикатор
+   // Отримуємо посилання на індикатор завантаження
    const loader = document.querySelector(".loader"); 
+   // Отримаємо посилання на кнопку "Load more"
+   const loadMoreBtn = document.querySelector(".load-more-btn");
 
    // Додаємо обробник події "submit" до форми
-searchForm.addEventListener("submit", onFormSubmit);
-   
+   searchForm.addEventListener("submit", onFormSubmit);
+   // Додаємо обробник події "click" на кнопку
+   loadMoreBtn.addEventListener("click", onBtnClick); 
 
+   let page = 1;
 
 function onFormSubmit(event) {
        event.preventDefault();
@@ -84,3 +86,8 @@ function hideLoader() {
 
 
 
+
+
+
+
+  
