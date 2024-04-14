@@ -1,9 +1,21 @@
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
+// Передаємо клас .gallery до SimpleLightbox для ініціалізації
+const lightbox = new SimpleLightbox('.gallery a', {
+    captionDelay: 250,
+    captionsData: 'alt'
+});
 
 export function renderImages(images) {
-    const gallery = document.querySelector(".gallery");
- // Генеруємо розмітку для кожного елемента галереї
-    gallery.insertAdjacentHTML("beforeend", galleryItemsMarkup(images));
+   const gallery = document.querySelector(".gallery");
+   // Генеруємо розмітку для кожного нового елемента галереї
+ const newImagesMarkup = galleryItemsMarkup(images);
+ // Додаємо нові зображення до вже існуючої галереї
+   gallery.insertAdjacentHTML("beforeend", newImagesMarkup);
+   
+    // Оновлюємо SimpleLightbox для нових зображень
+    lightbox.refresh();
     
  function galleryItemsMarkup(arr) {
     return arr
@@ -25,9 +37,7 @@ export function renderImages(images) {
      </li>`)
         .join('');
     };
-    
-    // Викликаємо функцію galleryItemsMarkup і передаємо їй зображення для генерації розмітки
-    gallery.innerHTML = galleryItemsMarkup(images);
+   
 };
 
 

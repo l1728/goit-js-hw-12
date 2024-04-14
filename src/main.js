@@ -8,25 +8,33 @@ import { fetchImages } from "./js/pixabay-api";
 import { renderImages } from "./js/render-functions"
 
    // Підключаємо бібліотеку і вказуємо затримку підпису зображення з атрибуту alt
-    const lightbox = new SimpleLightbox('.gallery a', { captionDelay: 250,
-    captionsData: 'alt', 
+const lightbox = new SimpleLightbox('.gallery a', { captionDelay: 250,
+captionsData: 'alt', 
    });
 
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+     const loadMoreBtn = document.querySelector(".load-more-btn");
+    loadMoreBtn.addEventListener("click", onBtnClick);
+   });
+
+
+
    // Отримуємо посилання на форму за ідентифікатором
-   const searchForm = document.getElementById("search-form");
-   // Отримуємо посилання на індикатор завантаження
-   const loader = document.querySelector(".loader"); 
-   // Отримаємо посилання на кнопку "Load more"
-   const loadMoreBtn = document.querySelector(".load-more-btn");
+const searchForm = document.getElementById("search-form");
+    // Додаємо обробник події "submit" до форми
+searchForm.addEventListener("submit", onFormSubmit);
+   // Отримуємо посилання на індикатор
+const loader = document.querySelector(".loader"); 
+const loadMoreBtn = document.querySelector(".load-more-btn");
+loadMoreBtn.addEventListener("click", onBtnClick);
 
-   // Додаємо обробник події "submit" до форми
-   searchForm.addEventListener("submit", onFormSubmit);
-   // Додаємо обробник події "click" на кнопку
-   loadMoreBtn.addEventListener("click", onBtnClick); 
+let page = 1;
+let query = "";
 
-   let page = 1;
-
-function onFormSubmit(event) {
+async function onFormSubmit(event) {
        event.preventDefault();
        // Показуємо індикатор завантаження
        showLoader();
@@ -35,16 +43,15 @@ function onFormSubmit(event) {
        // Отримуємо значення текстового поля пошуку
        const searchInput = document.getElementById("search-input");
        // Видаляємо зайві пробіли з початку та кінця рядка
-       const query = searchInput.value.trim();
+       query = searchInput.value.trim();
        // Перевіряємо, чи не є поле пошуку порожнім
-       if (query !== "") {
-       // Виконуємо HTTP-запит за допомогою функції fetchImages
-       fetchImages(query)
-         .then(images => {
-           //Очищуємо поле інпуту
-           searchInput.value = "";
-           if (images.length === 0) {
-             // Виводимо повідомлення про відсутність зображень
+  if (query !== "") {
+    page = 1;
+    try {
+      const images = await fetchImages(query, page);
+      //Очищуємо поле інпуту
+      searchInput.value = "";
+      if (images.length === 0) {
              iziToast.info({
                title: "Information",
                message: "Sorry, there are no images matching your search query. Please try again!",
@@ -52,23 +59,55 @@ function onFormSubmit(event) {
                backgroundColor: "red",
                maxWidth: "500px"
              });
-           } else {
+         loadMoreBtn.style.display = "none";
+      } else {
              renderImages(images);
              // Оновлюємо галерею після додавання нових елементів
              lightbox.refresh();
-           }         
-          })
-         .catch(error => {
+        loadMoreBtn.style.display = "block";
+           }       
+  }catch(error) {
            console.error("Error fetching images:", error);
-          })
-         .finally(() => {
+  }finally {
            // Приховуємо індикатор завантаження
            hideLoader();
-          });
+          };
   }
 };
 
 
+
+async function onBtnClick() {
+  page += 1;
+  showLoader();
+  try {
+    
+    const images = await fetchImages(query, page);
+    renderImages(images);
+
+    loadMoreBtn.style.display = "block";
+
+    const card = document.querySelector(".gallery-item");
+    if (card) {
+      const cardHeight = card.getBoundingClientRect().height;
+
+      window.scrollBy({
+        left: 0,
+        top: cardHeight * 2,
+        behavior: "smooth"
+      });
+    }
+    if (images.length === 0) {
+      loadMoreBtn.style.display = "none";
+    }
+  } catch (error) {
+    alert(error.message);
+  } finally {
+    hideLoader();
+  }
+};
+
+ 
 function showLoader() {
    // Показуємо індикатор
   loader.style.display = "block";
