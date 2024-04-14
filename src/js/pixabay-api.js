@@ -9,12 +9,13 @@ export async function fetchImages(query, page) {
     try {
     // Отримання відповіді з сервера
         const response = await axios.get(url);
+        console.log(response);
     // Перевірка чи є результати запиту
         if (!response.data.hits || response.data.hits.length === 0) {
             return [];
         }
-
-        return response.data.hits;
+  
+        return response.data;
     } catch (error) {
         console.error("Error fetching images:", error);
         return [];

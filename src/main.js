@@ -33,7 +33,7 @@ loadMoreBtn.addEventListener("click", onBtnClick);
 
 let page = 1;
 let query = "";
-
+const perPage = 15;
 async function onFormSubmit(event) {
        event.preventDefault();
        // Показуємо індикатор завантаження
@@ -49,9 +49,16 @@ async function onFormSubmit(event) {
     page = 1;
     try {
       const images = await fetchImages(query, page);
+
+      if (page * perPage >= images.totalHits) {
+      console.log("last");
+        loadMoreBtn.style.display = "none";
+      } else {
+         loadMoreBtn.style.display = "block";
+      }
       //Очищуємо поле інпуту
       searchInput.value = "";
-      if (images.length === 0) {
+      if (!images || !images.hits) {
              iziToast.info({
                title: "Information",
                message: "Sorry, there are no images matching your search query. Please try again!",
@@ -61,10 +68,10 @@ async function onFormSubmit(event) {
              });
          loadMoreBtn.style.display = "none";
       } else {
-             renderImages(images);
+             renderImages(images.hits);
              // Оновлюємо галерею після додавання нових елементів
              lightbox.refresh();
-        loadMoreBtn.style.display = "block";
+       
            }       
   }catch(error) {
            console.error("Error fetching images:", error);
@@ -83,22 +90,35 @@ async function onBtnClick() {
   try {
     
     const images = await fetchImages(query, page);
-    renderImages(images);
 
-    loadMoreBtn.style.display = "block";
+    
+    if ((page * 15) >= images.totalHits) {
+      loadMoreBtn.style.display = "none";
+    }
+    renderImages(images.hits);
 
+    const totalHits = images.totalHits;
     const card = document.querySelector(".gallery-item");
+
     if (card) {
       const cardHeight = card.getBoundingClientRect().height;
-
       window.scrollBy({
         left: 0,
         top: cardHeight * 2,
         behavior: "smooth"
       });
     }
-    if (images.length === 0) {
+    if (images.length === 0 || (totalHits > 0 && page >= Math.ceil(totalHits / 15))) {
       loadMoreBtn.style.display = "none";
+      iziToast.info({
+        title: "Information",
+        message: "We're sorry, but you've reached the end of search results.",
+        position: "topRight",
+        backgroundColor: "red",
+        maxWidth: "500px"
+      });
+    } else {
+      loadMoreBtn.style.display = "block";
     }
   } catch (error) {
     alert(error.message);
@@ -122,6 +142,7 @@ function hideLoader() {
     const gallery = document.querySelector(".gallery");
     gallery.innerHTML = "";
 };
+
 
 
 
