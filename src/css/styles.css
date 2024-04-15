@@ -148,6 +148,12 @@
   transform: scale(1.05);
 }
 
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: first baseline;
+}
+
 .loader {
   width: 48px;
   height: 48px;
@@ -156,8 +162,6 @@
   border-color: #4e75ff #4e75ff transparent #4e75ff;
   border-radius: 50%;
   display: none;
-  position: absolute;
-  top: 90px;
   left: 50%;
   transform: translateX(-50%);
   box-sizing: border-box;
