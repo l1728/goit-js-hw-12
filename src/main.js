@@ -49,10 +49,16 @@ async function onFormSubmit(event) {
     page = 1;
     try {
       const images = await fetchImages(query, page);
-
+       //Перевірка, чи остання сторінка - прибираємо кнопку, виводимо меседж
       if (page * perPage >= images.totalHits) {
-      console.log("last");
         loadMoreBtn.style.display = "none";
+         iziToast.info({
+        title: "Information",
+        message: "We're sorry, but you've reached the end of search results.",
+        position: "topRight",
+        backgroundColor: "red",
+        maxWidth: "500px"
+      });
       } else {
          loadMoreBtn.style.display = "block";
       }
@@ -92,7 +98,7 @@ async function onBtnClick() {
     const images = await fetchImages(query, page);
 
     
-    if ((page * 15) >= images.totalHits) {
+    if ((page * perPage) >= images.totalHits) {
       loadMoreBtn.style.display = "none";
     }
     renderImages(images.hits);

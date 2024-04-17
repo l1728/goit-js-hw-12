@@ -70,7 +70,7 @@
   display: flex;
   list-style-type: none;
   padding: 0;
-  margin-top: 108px;
+  margin-top: 64px;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
@@ -166,6 +166,7 @@
   transform: translateX(-50%);
   box-sizing: border-box;
   animation: rotation 2s linear infinite;
+  margin-top: 32px;
 }
 .loader::after {
   content: '';
